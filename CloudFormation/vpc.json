@@ -1,0 +1,234 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Metadata": {
+        "AWS::CloudFormation::Designer": {
+            "299823a6-ba90-4f82-a640-6d986530d966": {
+                "size": {
+                    "width": 400,
+                    "height": 240
+                },
+                "position": {
+                    "x": 240,
+                    "y": 40
+                },
+                "z": 0,
+                "embeds": [
+                    "4b4206cb-8f00-4c0c-9516-8e5cdb096525"
+                ]
+            },
+            "4b4206cb-8f00-4c0c-9516-8e5cdb096525": {
+                "size": {
+                    "width": 250,
+                    "height": 190
+                },
+                "position": {
+                    "x": 285,
+                    "y": 84
+                },
+                "z": 1,
+                "parent": "299823a6-ba90-4f82-a640-6d986530d966",
+                "embeds": [
+                    "7b1bc8b7-eea4-407b-aa8f-1b9d925f15c4",
+                    "31a44c94-68be-41f7-bf09-d88e5443848a"
+                ],
+                "iscontainedinside": [
+                    "299823a6-ba90-4f82-a640-6d986530d966",
+                    "299823a6-ba90-4f82-a640-6d986530d966"
+                ]
+            },
+            "43e2f0c2-7e40-4925-b9c6-35fbec9f364b": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 732.0340889320172,
+                    "y": 113.24231509269575
+                },
+                "z": 0
+            },
+            "7b1bc8b7-eea4-407b-aa8f-1b9d925f15c4": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 306.86346312874673,
+                    "y": 118.8737141099576
+                },
+                "z": 2,
+                "parent": "4b4206cb-8f00-4c0c-9516-8e5cdb096525",
+                "dependson": [
+                    "31a44c94-68be-41f7-bf09-d88e5443848a"
+                ]
+            },
+            "e8dfa910-8f03-4ea3-b9be-a53578287778": {
+                "source": {
+                    "id": "43e2f0c2-7e40-4925-b9c6-35fbec9f364b"
+                },
+                "target": {
+                    "id": "299823a6-ba90-4f82-a640-6d986530d966"
+                },
+                "z": 3
+            },
+            "31a44c94-68be-41f7-bf09-d88e5443848a": {
+                "size": {
+                    "width": 60,
+                    "height": 60
+                },
+                "position": {
+                    "x": 400,
+                    "y": 190
+                },
+                "z": 2,
+                "parent": "4b4206cb-8f00-4c0c-9516-8e5cdb096525"
+            },
+            "b0e81d1a-5b18-4fad-99fb-e8d252d43664": {
+                "source": {
+                    "id": "7b1bc8b7-eea4-407b-aa8f-1b9d925f15c4"
+                },
+                "target": {
+                    "id": "31a44c94-68be-41f7-bf09-d88e5443848a"
+                },
+                "z": 4
+            }
+        }
+    },
+    "Resources": {
+        "VPC": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": "10.0.0.0/16",
+                "EnableDnsSupport": true,
+                "EnableDnsHostnames": true,
+                "InstanceTenancy": "default"
+            }
+        },
+        "Subnet1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        0,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "CidrBlock": {
+                    "Fn::Sub": "10.0.0.0/20"
+                },
+                "MapPublicIpOnLaunch": true
+            }
+        },
+        "Subnet2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        1,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "CidrBlock": {
+                    "Fn::Sub": "10.0.32.0/20"
+                },
+                "MapPublicIpOnLaunch": true
+            }
+        },
+        "InternetGateway": {
+            "Type": "AWS::EC2::InternetGateway"
+        },
+        "VPCGatewayAttachment": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "InternetGatewayId": {
+                    "Ref": "InternetGateway"
+                },
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            }
+        },
+        "RouteTable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            }
+        },
+        "RouteTableAssociation1": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "Subnet1"
+                },
+                "RouteTableId": {
+                    "Ref": "RouteTable"
+                }
+            }
+        },
+        "RouteTableAssociation2": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "Subnet2"
+                },
+                "RouteTableId": {
+                    "Ref": "RouteTable"
+                }
+            }
+        },
+        "InternetRoute": {
+            "Type": "AWS::EC2::Route",
+            "DependsOn": "VPCGatewayAttachment",
+            "Properties": {
+                "GatewayId": {
+                    "Ref": "InternetGateway"
+                },
+                "RouteTableId": {
+                    "Ref": "RouteTable"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0"
+            }
+        }
+    },
+    "Outputs": {
+        "VPC": {
+            "Description": "VPC",
+            "Value": {
+                "Ref": "VPC"
+            },
+            "Export": {
+                "Name": "VPC"
+            }
+        },
+        "Subnet1": {
+            "Description": "Subnet 1 on AZ1",
+            "Value": {
+                "Ref": "Subnet1"
+            },
+            "Export": {
+                "Name": "Subnet1"
+            }
+        },
+        "Subnet2": {
+            "Description": "Subnet 2 on AZ2",
+            "Value": {
+                "Ref": "Subnet2"
+            },
+            "Export": {
+                "Name": "Subnet2"
+            }
+        }
+    }
+}
